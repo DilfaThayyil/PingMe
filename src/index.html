@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <style>
+    #sendButton {
+      background-color: blue;
+      color: aliceblue;
+    }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <input id="messageInput" autocomplete="off" /><button id="sendButton">Send</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const messages = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    function sendMessage() {
+      const message = messageInput.value;
+      if (message.trim() !== '') {
+        socket.emit('chat message', message);
+        messageInput.value = '';
+      }
+    }
+
+    sendButton.addEventListener('click', () => {
+      sendMessage();
+    });
+
+    document.addEventListener('keypress', () => {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    socket.on('chat message', (msg) => {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      messages.appendChild(item);
+    });
+  </script>
+</body>
+</html>
